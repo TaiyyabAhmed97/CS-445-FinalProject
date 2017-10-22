@@ -6,7 +6,7 @@ class Theater{
 }
 
 class Seat{
-    constructor(test)
+    constructor(cid)
     {
         this.test = test;
     }
@@ -20,9 +20,6 @@ class Section{
         this.price = price;
     }
 }
-
-
-
 class Show{
     constructor(name, web, date, time, section)
     {

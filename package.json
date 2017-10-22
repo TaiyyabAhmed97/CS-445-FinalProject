@@ -1,0 +1,19 @@
+{
+  "name": "cs445finalproject",
+  "version": "1.0.0",
+  "description": "Ticketing software",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TaiyyabAhmed97/CS-445-FinalProject.git"
+  },
+  "author": "Taiyyab Ahmed",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TaiyyabAhmed97/CS-445-FinalProject/issues"
+  },
+  "homepage": "https://github.com/TaiyyabAhmed97/CS-445-FinalProject#readme"
+}
