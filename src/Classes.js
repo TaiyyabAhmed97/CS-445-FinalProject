@@ -13,25 +13,24 @@ class Seat{
 }
 
 
-class Section extends Seat{
-    constructor(test)
+class Section{
+    constructor(id, price)
     {
-        super();
+        this.id = id;
+        this.price = price;
     }
 }
 
 
 
 class Show{
-    constructor(name, web, author, cast, director, date, time)
+    constructor(name, web, date, time, section)
     {
         this.name = name;
         this.web = web;
-        this.author =author;
-        this.cast = cast;
-        this.director = director;
-        this.date = date;
         this.time = time;
+        this.date = date;
+        this.section = section;
     }
 }
 
