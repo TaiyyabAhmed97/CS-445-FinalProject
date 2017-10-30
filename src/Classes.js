@@ -12,15 +12,14 @@ class Seat{
     }
 }
 
-
-class Section{
+ class Section{
     constructor(id, price)
     {
         this.id = id;
         this.price = price;
     }
 }
-class Show{
+export class Show{
     constructor(name, web, date, time, section)
     {
         this.name = name;

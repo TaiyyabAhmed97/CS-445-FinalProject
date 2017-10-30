@@ -1,5 +1,6 @@
 
 //Dependecies
+import Show from './Classes';
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -7,7 +8,6 @@ var router = express.Router();
 //express
 app.use(bodyParser());
 app.use(bodyParser.json());
-
 
 //Routes
 app.route('/thalia')
