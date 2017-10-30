@@ -3,14 +3,17 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-
+var router = express.Router();
 //express
 app.use(bodyParser());
 app.use(bodyParser.json());
 
 
 //Routes
-app.use('/thalia', require('./routes/thalia'));
+app.route('/thalia')
+    .get(function(req,res){
+        res.send('world');
+    }); 
 
 
 // Start Server
