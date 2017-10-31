@@ -1,6 +1,10 @@
 
 //Dependecies
-import Show from './Classes';
+var Section = require('.././models/Section');
+var Seat = require('.././models/Seat');
+var Show = require('.././models/Show');
+var Row = require('.././models/Row');
+
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -13,7 +17,13 @@ app.use(bodyParser.json());
 app.route('/thalia')
     .get(function(req,res){
         res.send('world');
-    }); 
+    })
+    .post(function(req,res)
+    {
+       console.log(req.body);
+       res.send(req.body);
+    });
+    
 
 
 // Start Server

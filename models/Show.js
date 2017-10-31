@@ -1,5 +1,4 @@
-import Section from './models';
-export class Show{
+class Show{
     constructor(name, web, date, time,section)
     {
         this.name = name;
@@ -18,3 +17,4 @@ export class Show{
     } 
 
 }
+module.exports =  Show;

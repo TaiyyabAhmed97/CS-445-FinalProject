@@ -1,5 +1,4 @@
-import Row from './models';
-export class Section{
+class Section{
     constructor(id, name, rows, price)
     {
         this.id = id;
@@ -8,3 +7,4 @@ export class Section{
         this.price = price;
     }
 }
+module.exports =  Section;

@@ -1,4 +1,4 @@
-export class Seat{
+class Seat{
     constructor(cid, status, available)
     {
         this.cid = cid;
@@ -14,3 +14,4 @@ export class Seat{
             this.available = 'sold';
     }
 }
+module.exports =  Seat;
