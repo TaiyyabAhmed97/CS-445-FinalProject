@@ -18,6 +18,7 @@
   "homepage": "https://github.com/TaiyyabAhmed97/CS-445-FinalProject#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "eslint": "^4.10.0",
     "express": "^4.16.2",
     "node-restful": "^0.2.6"
   },
