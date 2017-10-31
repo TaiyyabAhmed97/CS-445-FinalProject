@@ -20,8 +20,11 @@ app.route('/thalia')
     })
     .post(function(req,res)
     {
-       console.log(req.body);
-       res.send(req.body);
+       console.log(req.body.show_info);
+       var show1 = new Show(req.body.show_info.name,req.body.show_info.web,req.body.show_info.time,req.body.show_info.date);
+       show1.name = req.body.show_info.name;
+       console.log(show1);
+       res.send(req.body.show_info);
     });
     
 
