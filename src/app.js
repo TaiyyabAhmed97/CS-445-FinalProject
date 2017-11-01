@@ -20,6 +20,7 @@ Theater1.show = [];
 
 
 // All Show API Endpoints
+
 app.route('/thalia/shows')
     .get(function(req,res){
         //res.send('world');
@@ -146,7 +147,7 @@ app.route('/thalia/tickets/reports')
     {
         //return name and id of 3 specifc reports
     });
-    
+
 app.route('/thalia/tickets//reports/{mrid}[ ?show={wid} | ?start_date=YYYYMMDD&end_date=YYYYMMDD]')
     .get(function(req,res)
     {
