@@ -18,8 +18,16 @@ var Theater1 = new Theater();
 Theater1.show = [];
 Theater1.show.sections = [];
 //Routes
+//Define Theater layout and sections
+//let set = new Seat(200, 'available', )
+let Sections = new Array(6);
+Sections.rows = [];
 
+app.route('/populate/sections')
+    .post(function(req,res)
+    {
 
+    });
 // All Show API Endpoints
 
 app.route('/thalia/shows')
