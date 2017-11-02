@@ -16,29 +16,74 @@ app.use(bodyParser.json());
 //define theatre main object
 var Theater1 = new Theater();
 Theater1.show = [];
-Theater1.show.sections = [];
+
 //Routes
 //Define Theater layout and sections
 //let set = new Seat(200, 'available', )
-let Sections = new Array(6);
-Sections.rows = [];
+let sect1 = new Section();
+let sect2 = new Section();
+let sect3 = new Section();
+let sect4 = new Section();
+let sect5 = new Section();
+let sect6 = new Section();
+let Sections = [];
+
+Sections.push(sect1);
+Sections.push(sect2);
+Sections.push(sect3);
+Sections.push(sect4);
+Sections.push(sect5);
+Sections.push(sect6);
 
 app.route('/populate/sections')
     .post(function(req,res)
     {
+        for(var i =0;i<req.body.length;i++)
+        {
+            let rows = [];
+            let name = req.body[i].section_name;
+            for(var j =0;j<req.body[i].seating.length;j++)
+            {
+                let seats = [];
+                console.log('in seats/rows');
+                for(var k =0;k<req.body[i].seating[j].seats.length;k++)
+                {
+                    let avail = 'available';
+                    let seat = new Seat();
+                    seat.seatnum = req.body[i].seating[j].seats[k];
+                    seat.available = avail;
+                    seats.push(seat);
+                    console.log(seat);
+                }
+                let row = new Row(req.body[i].seating[j].row,seats);
+                rows.push(row);
+                console.log(rows);
+            }
+            console.log(name);
+            Sections[i].name = name;
+            Sections[i].rows = rows;
 
+        }
+        res.send(Sections);
     });
 // All Show API Endpoints
 
 app.route('/thalia/shows')
     .get(function(req,res){
-        res.send(Theater1.show);
+        res.send(Theater1.show[0].sections);
     })
     .post(function(req,res)
     {
        console.log(req.body.show_info);
-       let show1 = new Show(req.body.show_info.name,req.body.show_info.web,req.body.show_info.date,req.body.show_info.time, req.body.seating_info);
+       let show1 = new Show(req.body.show_info.name,req.body.show_info.web,req.body.show_info.date,req.body.show_info.time);
        Theater1.addShow(show1);
+       Theater1.show[[Theater1.show.length-1]].sections = [];
+       for(var p =0;p<req.body.seating_info.length;p++)
+       {
+           let sect = Sections[req.body.seating_info[p].sid - 123];
+           sect.price = req.body.seating_info.price;
+           Theater1.show[Theater1.show.length-1].sections.push(sect);
+       }
        res.send({"wid":Theater1.show[Theater1.show.length-1].wid});
        console.log(Theater1.show[Theater1.show.length-1].wid);
        // do case for error
