@@ -1,8 +1,8 @@
 class Seat{
-    constructor(cid, status, available)
+    constructor(cid, seatnum, available)
     {
         this.cid = cid;
-        this.status = status;
+        this.seatnum = seatnum;
         this.available = available;
     }
     sold()

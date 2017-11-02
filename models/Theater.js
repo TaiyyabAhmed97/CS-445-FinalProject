@@ -8,11 +8,11 @@ class Theater{
     {
         this.show.push(show);
     }
-    getShowbyID(id)
+    getShowbyID(wid)
     {
-        for(var i =0; j=this.show.length, i<j; i++)
+        for(var i =0; i<this.show.length; i++)
         {
-            if(id==this.show[i].id)
+            if(wid==this.show[i].wid)
             {
                return this.show[i];
             }

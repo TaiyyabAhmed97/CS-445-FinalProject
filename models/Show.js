@@ -1,12 +1,12 @@
 class Show{
     constructor(name, web, date, time,sections)
     {
+        this.wid = Show.getwid();
         this.name = name;
         this.web = web;
         this.time = time;
         this.date = date;
         this.sections = sections;
-        this.wid = Show.getwid();
     }
     static getwid() 
     { 
