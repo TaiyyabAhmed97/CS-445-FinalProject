@@ -34,11 +34,12 @@ class Theater{
             
         }
     }
-    getSect(sid, wid)
+    getSect(wid, sid)
     {
         for( var i =0;i<this.sectholders.length;i++)
         {
-            if((this.sectholders[i].wid === sid) && (this.sectholders[i].sid === sid))
+            console.log(this.sectholders[i]);
+            if((this.sectholders[i].wid == wid) && (this.sectholders[i].sid == sid))
             {
                 return this.sectholders[i];
             }
