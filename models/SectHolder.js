@@ -1,5 +1,6 @@
 let Seat = require('./Seat.js');
 let Row = require('./Row.js');
+var _ = require('underscore');
 class SectHolder{
     constructor(sid, wid, name, seats)
     {
@@ -12,13 +13,13 @@ class SectHolder{
     {   let rows = [];
         for(var i =0;i<seats.length;i++)
         {
-            let seats = [];
+            let seatsarray = [];
             for(var j = 0;j<seats[i].seats.length;j++)
             {
                 let seat = new Seat(seats[i].seats[j], 'available');
-                seats.push(seat);
+                seatsarray.push(seat);
             }
-            let row = new Row(seats[i].row, seats);
+            let row = new Row(seats[i].row, seatsarray);
             rows.push(row);
         }
         this.seats =  rows;
