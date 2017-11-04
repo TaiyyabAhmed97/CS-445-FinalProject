@@ -1,7 +1,7 @@
 class Row{
-    constructor(rown, seats)
+    constructor(row, seats)
     {
-        this.rown = rown;
+        this.row = row;
         this.seats = seats;
     }
 }
