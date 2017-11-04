@@ -15,6 +15,10 @@ class Show{
         else this.wid++; 
         return this.wid; 
     } 
+    getShow()
+    {
+        return _.omit(this, ["sections"]);
+    }
 
 }
 module.exports =  Show;
