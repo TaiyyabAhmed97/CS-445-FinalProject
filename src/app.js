@@ -6,7 +6,7 @@ var Show = require('.././models/Show');
 var Row = require('.././models/Row');
 var SectHolder = require('.././models/SectHolder');
 var Theater = require('.././models/Theater');
-
+var _ = require('underscore');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -75,13 +75,13 @@ app.route('/thalia/shows')
        for(var i =0;i<show1.sections.length;i++)
        {
            let seatid =  show1.sections[i].sid - 123;
-           console.log(seatid);
-           let sect2 = new SectHolder(show1.sections[i].sid,show1.wid,Sections[seatid].section_name,Sections[seatid]);
-           sect2.getSeats(Sections[seatid]);
+           //console.log(seatid);
+           let sect2 = new SectHolder(show1.sections[i].sid,show1.wid,Sections[seatid].section_name);
+           sect2.getSeats(Sections[seatid].seating);
            Theater1.addSect(sect2);
        }
        res.send({"wid":Theater1.show[Theater1.show.length-1].wid});
-       console.log(Theater1.show[Theater1.show.length-1].wid);
+       //console.log(Theater1.show[Theater1.show.length-1].wid);
        // do case for error
     });
 
@@ -98,8 +98,8 @@ app.route('/thalia/shows/:showsId')
         for(var i =0;i< Theater1.show[id].sections.length;i++)  
         {
             let seatid =   Theater1.show[id].sections[i].sid - 123;
-            let sect2 = new SectHolder(Theater1.show[id].sections[i].sid,Theater1.show[id].wid, Sections[seatid].section_name,Sections[seatid]);
-            sect2.getSeats(Sections[seatid]);
+            let sect2 = new SectHolder(Theater1.show[id].sections[i].sid,Theater1.show[id].wid, Sections[seatid].section_name);
+            sect2.getSeats(Sections[seatid].seating);
             sects3.push(sect2);
         }
         Theater1.replaceSect(sects3);
@@ -124,10 +124,12 @@ app.route('/thalia/shows/:showId/sections')
 app.route('/thalia/shows/:showId/sections/:secId')
     .get(function(req,res)
     {
-        let obj1 = JSON.stringify(Theater1.show[req.params.showId - 300].getShow());
-        let obj2 = JSON.stringify(Theater1.sectholders.getSect(req.params.showId, req.params.secId).getsect());
-        let obj3 = obj2.merge(obj1);
-        res.send(obj3);
+     
+        let obj1 = Theater1.show[req.params.showId - 300].getShow();
+        let obj2 = Theater1.getSect(req.params.showId, req.params.secId).getsect();
+        let obj3 = Object.assign(obj1, obj2);
+        res.send(obj1);
+        res.send(obj2);
     });
 
 app.route('/thalia/shows/:showId/donations')
@@ -158,7 +160,7 @@ app.route('thalia/ /seating?show={wid}&section={sid}&count=[0-9]+')
 app.route('/thalia/sections')
     .get(function(req,res)
     {
-        //return all sections
+        
     });
 
 app.route('/thalia/sections/:secId')

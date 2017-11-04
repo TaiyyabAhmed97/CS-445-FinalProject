@@ -1,3 +1,4 @@
+var _ = require('underscore');
 class Show{
     constructor(name, web, date, time,sections)
     {
