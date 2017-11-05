@@ -4,6 +4,7 @@ var Section = require('.././models/Section');
 var Seat = require('.././models/Seat');
 var Show = require('.././models/Show');
 var Row = require('.././models/Row');
+var Patron = require('.././models/Patron');
 var SectHolder = require('.././models/SectHolder');
 var Theater = require('.././models/Theater');
 var _ = require('underscore');
