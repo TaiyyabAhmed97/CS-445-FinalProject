@@ -1,10 +1,9 @@
 class Section{
-    constructor(sid, name, rows, price)
+    constructor(name, seating)
     {
         this.sid = Section.getsid();
-        this.name = name;
-        this.rows = rows;
-        this.price = price;
+        this.section_name = name;
+        this.seating = seating;
     }
     static getsid() 
     { 

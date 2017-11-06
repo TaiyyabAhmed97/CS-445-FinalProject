@@ -4,6 +4,7 @@ var Section = require('.././models/Section');
 var Seat = require('.././models/Seat');
 var Show = require('.././models/Show');
 var Row = require('.././models/Row');
+var Ticket = require('.././models/Ticket');
 var Patron = require('.././models/Patron');
 var SectHolder = require('.././models/SectHolder');
 var Theater = require('.././models/Theater');
@@ -27,35 +28,11 @@ var Sections = [];
 app.route('/populate/sections')
 .post(function(req,res)
 {
-    /*for(var i =0;i<req.body.length;i++)
-    {
-        let rows = [];
-        let name = req.body[i].section_name;
-        for(var j =0;j<req.body[i].seating.length;j++)
-        {
-            let seats = [];
-            console.log('in seats/rows');
-            for(var k =0;k<req.body[i].seating[j].seats.length;k++)
-            {
-                let avail = 'available';
-                let seat = new Seat();
-                seat.seatnum = req.body[i].seating[j].seats[k];
-                seat.available = avail;
-                seats.push(seat);
-                console.log(seat);
-            }
-            let row = new Row(req.body[i].seating[j].row,seats);
-            rows.push(row);
-            console.log(rows);
-        }
-        console.log(name);
-        Sections[i].name = name;
-        Sections[i].rows = rows;
-
-    }*/
+    
     for(let i =0;i<req.body.length;i++)
     {
-        Sections.push(req.body[i]);
+        let sect = new Section(req.body[i].section_name, req.body[i].seating);
+        Sections.push(sect);
     }
     res.send(Sections);
 });
@@ -161,13 +138,18 @@ app.route('thalia/ /seating?show={wid}&section={sid}&count=[0-9]+')
 app.route('/thalia/sections')
     .get(function(req,res)
     {
-        
+        let temp = [];
+        for(var i =0;i<Sections.length;i++)
+        {
+            temp.push(_.omit(Sections[i],["seating"]));
+        }
+        res.send(temp);
     });
 
 app.route('/thalia/sections/:secId')
     .get(function(req,res)
     {
-        //return section seating info
+        
     });
 
 //End Seating/Section API
@@ -249,3 +231,4 @@ app.route('/thalia/search?topic=topicword&key=keyword')
 // Start Server
 app.listen(3000);
 console.log('Api is wokring on port 3000');
+
