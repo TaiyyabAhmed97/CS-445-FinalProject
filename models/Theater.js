@@ -1,5 +1,5 @@
 class Theater{
-    constructor(show, sectholders)
+    constructor(show, sectholders, orders)
     {
         this.show = show;
         this.sectholders = sectholders;
