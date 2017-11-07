@@ -4,12 +4,14 @@ var Section = require('.././models/Section');
 var Seat = require('.././models/Seat');
 var Show = require('.././models/Show');
 var Row = require('.././models/Row');
+var Order = require('.././models/Order');
 var Ticket = require('.././models/Ticket');
 var Patron = require('.././models/Patron');
 var SectHolder = require('.././models/SectHolder');
 var Theater = require('.././models/Theater');
 var _ = require('underscore');
 var express = require('express');
+var moment = require('moment');
 var app = express();
 var bodyParser = require('body-parser');
 var router = express.Router();
@@ -149,19 +151,21 @@ app.route('/thalia/sections')
 app.route('/thalia/sections/:secId')
     .get(function(req,res)
     {
-        
+        res.send(Sections[req.params.secId - 123]);   
     });
 
 //End Seating/Section API
-
-
-
 
 //Begin Orders API Endpoints
 app.route('/thalia/orders')
     .post(function(req,res)
     {
         //rcreate orders object and do tuff here
+        let patron = Patron(req.body.patron_info.name, req.body.patron_info.phone, req.body.patron_info.email, req.body.patron_info.billing_address, req.body.patron_info.cc_number, req.body.patron_info.cc_expiration_date);
+        let order = new Order(req.body.wid, req.body.sid, req.body.seats, patron);
+        Theater.orders.push(order);
+        //for(var i =0;i<order.sea)
+        
     })
     .get(function(req,res)
     {
