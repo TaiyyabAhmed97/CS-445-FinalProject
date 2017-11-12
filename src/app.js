@@ -136,7 +136,7 @@ app.route('/thalia/seating')
     {
         if(_.has(req.query, 'starting_seat_id'))
         {
-
+            res.send(Theater1.getseating(req.query.show, req.query.section, req.query.count, req.query.starting_seat_id));
         }
         else
         {
