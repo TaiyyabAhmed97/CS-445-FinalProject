@@ -16,6 +16,7 @@ class SectHolder{
             let seatsarray = [];
             for(var j = 0;j<seats[i].seats.length;j++)
             {
+                
                 let seat = new Seat(seats[i].seats[j], 'available');
                 seatsarray.push(seat);
             }
