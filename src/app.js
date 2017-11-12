@@ -131,12 +131,18 @@ app.route('/thalia/shows/:showId/donations/:donateId')
 
 
 //Begin Seating/Sections API endpoints
-app.route('thalia/ /seating?show={wid}&section={sid}&count=[0-9]+')
+app.route('/thalia/seating')
     .get(function(req,res)
     {
-        //make patron object and use it for this
-    });
+        if(_.has(req.query, 'starting_seat_id'))
+        {
 
+        }
+        else
+        {
+            res.send(Theater1.getseating(req.query.show, req.query.section, req.query.count));
+        }
+    });
 app.route('/thalia/sections')
     .get(function(req,res)
     {
@@ -163,7 +169,8 @@ app.route('/thalia/orders')
         //rcreate orders object and do tuff here
         let patron = Patron(req.body.patron_info.name, req.body.patron_info.phone, req.body.patron_info.email, req.body.patron_info.billing_address, req.body.patron_info.cc_number, req.body.patron_info.cc_expiration_date);
         let order = new Order(req.body.wid, req.body.sid, req.body.seats, patron);
-        Theater.orders.push(order);
+
+        Theater.addOrder(order);
         //for(var i =0;i<order.sea)
         
     })
