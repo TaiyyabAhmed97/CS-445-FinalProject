@@ -1,13 +1,21 @@
 class Seat{
-    constructor(cid, seatnum, available)
+    constructor(seatnum, available)
     {
         this.cid = Seat.getcid();
-        this.seatnum = seatnum;
-        this.available = available;
+        this.seat = seatnum;
+        this.status = Seat.getavail();
     }
     sold()
     {
             this.available = 'sold'; 
+    }
+    static getavail()
+    {
+        if(!this.status)
+        {
+            this.status = 'available';
+        }
+        return this.status;
     }
     unsold()
     {
