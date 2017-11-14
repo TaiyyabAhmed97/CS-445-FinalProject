@@ -12,7 +12,7 @@ class Theater{
     }
     checkOrder(order)
     { 
-        let sectseats = this.getSect(order.wid, order.sid).seats;
+        let sectseats = this.getSect(order.wid, order.sid).seating;
         let idx = 0;
         let row = '';
         var seating = [];
@@ -24,6 +24,7 @@ class Theater{
             row1.row = row;
             for(let j = 0;j<rseats.length;j++)
             {
+                //rseats[j].status = 'sold';
                 if(order.seats[idx].cid == rseats[j].cid &&(rseats[j].status=='available'))
                 {
                     idx++;
@@ -46,17 +47,22 @@ class Theater{
             {
                 let tick = new Ticket(this.getPrice(order.wid, order.sid, order.seats.length), 'open', order.wid, order.show_info,
                 order.patron_info, order.sid, sectseats.name, ssats[i]);
-                tickarr.push(tick);
-                tickarr1.push(tick.tid);
+                let obj = {"tid":tick.tid.toString(), "status": 'open'}
+                tickarr.push(obj);
+                tickarr1.push(tick.tid.toString());
                 this.addTicket(tick);
             }
             let order1 = new Order(order.wid, order.show_info, this.getPrice(order.wid, order.sid, order.seats.length), order.seats.length, order.patron_info, tickarr);
             this.addOrder(order1);
             let order2 = _.omit(order1, ['tickets']);
-            let retobj = Object.assign(tickarr1, order2);
+            let obj1 = {"tickets": tickarr1};
+            let retobj = Object.assign(order2, obj1);
             return retobj;
- 
-
+        }
+        else
+        {
+            let str = 'Sorry the requested seat(s) are not available';
+            return str;
         }
     }
     getseating(wid, sid, count, starting_seat_id)
@@ -78,7 +84,7 @@ class Theater{
                     if(rowseats[j].status == 'available')
                     {
                         seating.push(rowseats[j]);
-                        if(seating.length==3)
+                        if(seating.length==count)
                         {
                             i = 100000;
                             j = i;
@@ -93,7 +99,7 @@ class Theater{
             if(seating.length==count)
             {
             let status = 'ok';
-            let show = this.getShowbyID(wid).getShow();
+            let show = this.getShowbyID(wid).getShow().show_info;
             let total_amount = 0;
             let sections = this.getShowbyID(wid).seating_info;
             for(let k = 0;k<sections.length;k++)
@@ -123,7 +129,7 @@ class Theater{
             {
                 seating = [];
                 let status = 'Error '+count+' contiguous seats were not found';
-                let show = this.getShowbyID(wid).getShow();
+                let show = this.getShowbyID(wid).getShow().show_info;
                 starting_seat_id = '201';
                 var seta1 = {};
                 seta1['row'] = name;
@@ -156,7 +162,7 @@ class Theater{
                     if(rowseats[j].status == 'available')
                     {
                         seating.push(rowseats[j]);
-                        if(seating.length==3)
+                        if(seating.length==count)
                         {
                             i = 100000;
                             j = i;
@@ -169,10 +175,10 @@ class Theater{
                     }
                 }
             }
-            if(seating.length==3)
+            if(seating.length==count)
             {
             let status = 'ok';
-            let show = this.getShowbyID(wid).getShow();
+            let show = this.getShowbyID(wid).getShow().show_info;
             let total_amount = 0;
             let sections = this.getShowbyID(wid).seating_info;
             for(var k = 0;k<sections.length;k++)
@@ -202,7 +208,7 @@ class Theater{
             {
                 seating = [];
                 let status = 'Error '+count+' contiguous seats were not found';
-                let show = this.getShowbyID(wid).getShow();
+                let show = this.getShowbyID(wid).getShow().show_info;
                 starting_seat_id = '201';
                 var seta1 = {};
                 seta1['row'] = name;
@@ -220,6 +226,28 @@ class Theater{
          }
 
 
+    }
+    getOrders(oid)
+    {
+        if(!oid)
+        {
+            let tmparr = [];
+            for(let i =0;i<this.orders.length;i++)
+            {
+                tmparr.push(_.omit(this.orders[i], ["tickets"]));
+            }
+            return tmparr;
+        }
+        else
+        {
+            for(let i =0;i<this.orders.length;i++)
+            {
+                if(oid == this.orders[i].oid)
+                {
+                    return this.orders[i];
+                }
+            }
+        }
     }
     addShow(show)
     {

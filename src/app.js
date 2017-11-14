@@ -156,6 +156,12 @@ app.route('/thalia/shows/:showId/donations/:donateId')
 
 
 //Begin Seating/Sections API endpoints
+app.route('/thalia/seating/:secId')
+.get(function(req,res)
+{
+    res.send(Sections[req.params.secId - 123]);
+});
+
 app.route('/thalia/seating')
     .get(function(req,res)
     {
@@ -163,9 +169,18 @@ app.route('/thalia/seating')
         {
             res.send(Theater1.getseating(req.query.show, req.query.section, req.query.count, req.query.starting_seat_id));
         }
-        else
+        else if (req.query.length>1)
         {
             res.send(Theater1.getseating(req.query.show, req.query.section, req.query.count));
+        }
+        else
+        {
+            let temprr = [];
+            for(let i =0;i<Sections.length;i++)
+            {
+                temprr.push(_.omit(Sections[i], ["seating"]));
+            }
+            res.send(temprr);
         }
     });
 app.route('/thalia/sections')
@@ -199,7 +214,7 @@ app.route('/thalia/orders')
     })
     .get(function(req,res)
     {
-       //return all orders 
+       res.send(Theater1.getOrders());
     });
 
 app.route('/thalia/orders?start_date=YYYYMMDD&end_date=YYYYMMDD')
@@ -211,7 +226,7 @@ app.route('/thalia/orders?start_date=YYYYMMDD&end_date=YYYYMMDD')
 app.route('/thalia/orders/:oid')
     .get(function(req,res)
     {
-        //return a specific order
+        res.send(Theater1.getOrders(req.params.oid));
     });
 
 // End Orders API
