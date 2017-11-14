@@ -2,12 +2,13 @@ let Seat = require('./Seat.js');
 let Row = require('./Row.js');
 var _ = require('underscore');
 class SectHolder{
-    constructor(sid, wid, name, seats)
+    constructor(sid, wid, price, name, seating)
     {
         this.wid = wid;
         this.sid = sid;
         this.name = name;
-        this.seats = seats;
+        this.price = price;
+        this.seating = seating;
     }
     getSeats(seats)
     {   let rows = [];
@@ -23,7 +24,7 @@ class SectHolder{
             let row = new Row(seats[i].row, seatsarray);
             rows.push(row);
         }
-        this.seats =  rows;
+        this.seating =  rows;
     }
     getsect()
     {

@@ -1,13 +1,10 @@
 var _ = require('underscore');
 class Show{
-    constructor(name, web, date, time,sections)
+    constructor(show_info,seating_info)
     {
         this.wid = Show.getwid();
-        this.name = name;
-        this.web = web;
-        this.time = time;
-        this.date = date;
-        this.sections = sections;
+        this.show_info = show_info;
+        this.seating_info = seating_info;
     }
     static getwid() 
     { 
@@ -18,7 +15,7 @@ class Show{
     } 
     getShow()
     {
-        return _.omit(this, ["sections"]);
+        return _.omit(this, ["seating_info"]);
     }
 
 }

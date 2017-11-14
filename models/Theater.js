@@ -54,7 +54,7 @@ class Theater{
             this.addOrder(order1);
             let order2 = _.omit(order1, ['tickets']);
             let retobj = Object.assign(tickarr1, order2);
-            return order2;
+            return retobj;
  
 
         }
@@ -63,7 +63,7 @@ class Theater{
     {
         let sect = this.getSect(wid, sid);
         let section_name = sect.name;
-        let sectseats = sect.seats;
+        let sectseats = sect.seating;
         let seating = [];
         let name = '';
         if(!starting_seat_id)
@@ -95,7 +95,7 @@ class Theater{
             let status = 'ok';
             let show = this.getShowbyID(wid).getShow();
             let total_amount = 0;
-            let sections = this.getShowbyID(wid).sections;
+            let sections = this.getShowbyID(wid).seating_info;
             for(let k = 0;k<sections.length;k++)
             {
                 if(sections[k].sid == sid)
@@ -174,7 +174,7 @@ class Theater{
             let status = 'ok';
             let show = this.getShowbyID(wid).getShow();
             let total_amount = 0;
-            let sections = this.getShowbyID(wid).sections;
+            let sections = this.getShowbyID(wid).seating_info;
             for(var k = 0;k<sections.length;k++)
             {
                 if(sections[k].sid == sid)
@@ -261,7 +261,7 @@ class Theater{
     }
     getPrice(wid, sid, count)
     {
-        let sections = this.getShowbyID(wid).sections;
+        let sections = this.getShowbyID(wid).seating_info;
         let total_amount = 0;
         for(let k = 0;k<sections.length;k++)
         {

@@ -48,17 +48,24 @@ app.route('/thalia/shows')
         if(Theater1.show.length==0)
             res.send('Sorry, no shows yet, check back ina later time', 400);
         else
-            res.send(Theater1.show);
+            {
+                var arr = [];
+                for(let i =0;i<Theater1.show.length;i++)
+                {
+                    arr.push(_.omit(Theater1.show[i], ["seating_info"]));
+                }
+                res.send(arr);
+            }
     })
     .post(function(req,res)
     {
-       let show1 = new Show(req.body.show_info.name,req.body.show_info.web,req.body.show_info.date,req.body.show_info.time, req.body.seating_info);
+       let show1 = new Show(req.body.show_info, req.body.seating_info)
        Theater1.addShow(show1);
-       for(var i =0;i<show1.sections.length;i++)
+       for(var i =0;i<show1.seating_info.length;i++)
        {
-           let seatid =  show1.sections[i].sid - 123;
+           let seatid =  show1.seating_info[i].sid - 123;
            //console.log(seatid);
-           let sect2 = new SectHolder(show1.sections[i].sid,show1.wid,Sections[seatid].section_name);
+           let sect2 = new SectHolder(show1.seating_info[i].sid,show1.wid,show1.seating_info[i].price, Sections[seatid].section_name);
            sect2.getSeats(Sections[seatid].seating);
            Theater1.addSect(sect2);
        }
@@ -72,15 +79,15 @@ app.route('/thalia/shows/:showsId')
     {
         let sects3 = [];
         let id = req.params.showsId - 300;
-        Theater1.show[id].name = req.body.show_info.name;
-        Theater1.show[id].web = req.body.show_info.web;
-        Theater1.show[id].date = req.body.show_info.date; 
-        Theater1.show[id].time = req.body.show_info.time;  
-        Theater1.show[id].sections = req.body.seating_info; 
-        for(var i =0;i< Theater1.show[id].sections.length;i++)  
+        Theater1.show[id].show_info.name = req.body.show_info.name;
+        Theater1.show[id].show_info.web = req.body.show_info.web;
+        Theater1.show[id].show_info.date = req.body.show_info.date; 
+        Theater1.show[id].show_info.time = req.body.show_info.time;  
+        Theater1.show[id].seating_info = req.body.seating_info; 
+        for(var i =0;i< Theater1.show[id].seating_info.length;i++)  
         {
-            let seatid =   Theater1.show[id].sections[i].sid - 123;
-            let sect2 = new SectHolder(Theater1.show[id].sections[i].sid,Theater1.show[id].wid, Sections[seatid].section_name);
+            let seatid =   Theater1.show[id].seating_info[i].sid - 123;
+            let sect2 = new SectHolder(Theater1.show[id].seating_info[i].sid,Theater1.show[id].wid, Theater1.show[id].seating_info[i].price,Sections[seatid].section_name);
             sect2.getSeats(Sections[seatid].seating);
             sects3.push(sect2);
         }
@@ -98,7 +105,24 @@ app.route('/thalia/shows/:showsId')
 app.route('/thalia/shows/:showId/sections')
     .get(function(req,res)
     {
-        res.send(Theater1.show[req.params.showId-300].sections);
+        let sarr = [];
+        let idx =0;
+        let show = Theater1.getShowbyID(req.params.showId);
+        for(let i = 0;i<show.seating_info.length;i++)
+        {
+                for(let j = 0;j<Sections.length;j++)
+                {
+                    if(show.seating_info[i].sid == Sections[j].sid)
+                    {
+                        let obj2 = _.omit(Sections[j], ["wid", "seating"]);
+                        let price = {"price":show.seating_info[i].price};
+                        console.log(show.seating_info[i].price);
+                        let obj1 = Object.assign(obj2, price);
+                        sarr.push(obj1); 
+                    }
+                }
+        }
+        res.send(sarr);
         //populate section and row objects before starting this code
         // return seat info from res.params
     });
@@ -110,8 +134,7 @@ app.route('/thalia/shows/:showId/sections/:secId')
         let obj1 = Theater1.show[req.params.showId - 300].getShow();
         let obj2 = Theater1.getSect(req.params.showId, req.params.secId).getsect();
         let obj3 = Object.assign(obj1, obj2);
-        res.send(obj1);
-        res.send(obj2);
+        res.send(obj3);
     });
 
 app.route('/thalia/shows/:showId/donations')
