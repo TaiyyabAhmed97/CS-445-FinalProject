@@ -22,6 +22,8 @@ app.use(bodyParser.json());
 var Theater1 = new Theater();
 Theater1.show = [];
 Theater1.sectholders = [];
+Theater1.orders = [];
+Theater1.tickets = [];
 //Routes
 //Define Theater layout and sections
 //let set = new Seat(200, 'available', )
@@ -167,12 +169,10 @@ app.route('/thalia/orders')
     .post(function(req,res)
     {
         //rcreate orders object and do tuff here
-        let patron = Patron(req.body.patron_info.name, req.body.patron_info.phone, req.body.patron_info.email, req.body.patron_info.billing_address, req.body.patron_info.cc_number, req.body.patron_info.cc_expiration_date);
-        let order = new Order(req.body.wid, req.body.sid, req.body.seats, patron);
-
-        Theater.addOrder(order);
-        //for(var i =0;i<order.sea)
-        
+        let order = req.body;
+        res.send(Theater1.checkOrder(order));
+        //res.send(Theater.addOrder(order));
+    
     })
     .get(function(req,res)
     {

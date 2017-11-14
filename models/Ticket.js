@@ -1,7 +1,7 @@
 class Ticket{
-    constructor(tid, price, status, wid, show, patron, sid, sname, seats)
+    constructor(price, status, wid, show, patron, sid, sname, seats)
     {
-        this.tid = tid;
+        this.tid = Ticket.getid();
         this.price = price;
         this.status = status;
         this.wid = wid;
@@ -11,9 +11,12 @@ class Ticket{
         this.section_name = sname;
         this.seating = seats;
     }
-    getid()
+    static getid()
     {
-        return this.tid;
+        if (!this.tid) 
+        { this.tid = 723; } 
+        else this.tid++; 
+        return this.tid; 
     }
 }
 module.exports = Ticket;
