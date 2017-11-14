@@ -1,14 +1,63 @@
 let Row = require('./Row.js');
+let Ticket = require('./Ticket.js');
+let Order = require('./Order.js');
+var _ = require('underscore');
 class Theater{
-    constructor(show, sectholders, orders)
+    constructor(show, sectholders, orders, tickets)
     {
         this.show = show;
         this.sectholders = sectholders;
         this.orders = orders;
+        this.tickets = tickets;
     }
-    addOrder(order)
-    {
-        this.orders.push(Order);
+    checkOrder(order)
+    { 
+        let sectseats = this.getSect(order.wid, order.sid).seats;
+        let idx = 0;
+        let row = '';
+        var seating = [];
+        for(let i =0;i<sectseats.length;i++)
+        {
+            let rseats = sectseats[i].seats;
+            row = sectseats[i].row;
+            let row1 = new Row();
+            row1.row = row;
+            for(let j = 0;j<rseats.length;j++)
+            {
+                if(order.seats[idx].cid == rseats[j].cid &&(rseats[j].status=='available'))
+                {
+                    idx++;
+                    if(idx==order.seats.length)
+                    {
+                        row1.seats = order.seats;
+                        i = sectseats.length +1;
+                        j = order.seats.length + 1;
+                        seating.push(row1);
+                    }
+                }
+            }
+        }
+        if(idx == order.seats.length)
+        {
+            let tickarr = [];
+            let tickarr1 = [];
+            let ssats = seating[0].seats;
+            for(let i =0;i<ssats.length;i++)
+            {
+                let tick = new Ticket(this.getPrice(order.wid, order.sid, order.seats.length), 'open', order.wid, order.show_info,
+                order.patron_info, order.sid, sectseats.name, ssats[i]);
+                tickarr.push(tick);
+                tickarr1.push(tick.tid);
+                this.addTicket(tick);
+            }
+            let order1 = new Order(order.wid, order.show_info, this.getPrice(order.wid, order.sid, order.seats.length), order.seats.length, order.patron_info, tickarr);
+            this.addOrder(order1);
+            let order2 = _.omit(order1, ['tickets']);
+            let retobj = Object.assign(tickarr1, order2);
+            return order2;
+ 
+
+        }
     }
     getseating(wid, sid, count, starting_seat_id)
     {
@@ -41,7 +90,7 @@ class Theater{
                     }
                 }
             }
-            if(seating.length==3)
+            if(seating.length==count)
             {
             let status = 'ok';
             let show = this.getShowbyID(wid).getShow();
@@ -180,6 +229,14 @@ class Theater{
     {
         this.sectholders.push(sect);
     }
+    addOrder(order)
+    {
+        this.orders.push(order);
+    }
+    addTicket(ticket)
+    {
+        this.tickets.push(ticket);
+    }
     getShowbyID(wid)
     {
         for(var i =0; i<this.show.length; i++)
@@ -202,6 +259,20 @@ class Theater{
             
         }
     }
+    getPrice(wid, sid, count)
+    {
+        let sections = this.getShowbyID(wid).sections;
+        let total_amount = 0;
+        for(let k = 0;k<sections.length;k++)
+        {
+            if(sections[k].sid == sid)
+            {
+                total_amount = sections[k].price * count;
+                k = sections.length + 1;
+            }
+        }
+        return total_amount;
+    }
     getSect(wid, sid)
     {
         for( var i =0;i<this.sectholders.length;i++)
@@ -223,5 +294,6 @@ class Theater{
             this.addShow(sect[i]);
         }
     }
+
 }
 module.exports = Theater;
