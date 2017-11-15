@@ -156,33 +156,34 @@ app.route('/thalia/shows/:showId/donations/:donateId')
 
 
 //Begin Seating/Sections API endpoints
+app.route('/thalia/seating')
+.get(function(req,res)
+{
+    if(_.has(req.query, 'starting_seat_id'))
+    {
+        res.send(Theater1.getseating(req.query.show, req.query.section, req.query.count, req.query.starting_seat_id));
+    }
+    else if (_.has(req.query, 'count'))
+    {
+        res.send(Theater1.getseating(req.query.show, req.query.section, req.query.count));
+    }
+    else
+    {
+        let temprr = [];
+        for(let i =0;i<Sections.length;i++)
+        {
+            temprr.push(_.omit(Sections[i], ["seating"]));
+        }
+        res.send(temprr);
+    }
+});
 app.route('/thalia/seating/:secId')
 .get(function(req,res)
 {
     res.send(Sections[req.params.secId - 123]);
 });
 
-app.route('/thalia/seating')
-    .get(function(req,res)
-    {
-        if(_.has(req.query, 'starting_seat_id'))
-        {
-            res.send(Theater1.getseating(req.query.show, req.query.section, req.query.count, req.query.starting_seat_id));
-        }
-        else if (req.query.length>1)
-        {
-            res.send(Theater1.getseating(req.query.show, req.query.section, req.query.count));
-        }
-        else
-        {
-            let temprr = [];
-            for(let i =0;i<Sections.length;i++)
-            {
-                temprr.push(_.omit(Sections[i], ["seating"]));
-            }
-            res.send(temprr);
-        }
-    });
+
 app.route('/thalia/sections')
     .get(function(req,res)
     {
@@ -238,11 +239,24 @@ app.route('/thalia/orders/:oid')
 app.route('/thalia/tickets/:tid')
     .get(function(req,res)
     {
-        //return a specific ticket
+        res.send(Theater1.getTicket(req.params.tid));
     })
     .post(function(req,res)
     {
-        //change ticket status
+        for(let i =0;i<Theater1.orders.length;i++)
+        {
+            ticks = Theater1.orders[i];
+            for(let j= 0;j<ticks.tickets.length;j++)
+            {
+                if(ticks.tickets[j].tid == req.params.tid)
+                {
+                    ticks.tickets[j].status = 'used';
+                    i = 100000;
+                    j = i;
+                }
+            }
+        }
+        res.send(Theater1.scanTicket(req.params.tid));
     });
 
 app.route('/thalia/tickets/donations')

@@ -10,12 +10,37 @@ class Theater{
         this.orders = orders;
         this.tickets = tickets;
     }
+    scanTicket(tid)
+    {
+        for(let i =0;i<this.tickets.length;i++)
+        {
+            if(tid == this.tickets[i].tid)
+            {
+                this.tickets[i].status = 'used';
+                break;
+            }
+        }
+        return {"tid": tid, "status": 'used'};
+    }
+    getTicket(tid)
+    {
+        for(let i =0;i<this.tickets.length;i++)
+        {
+            if(tid == this.tickets[i].tid)
+            {
+                return this.tickets[i];
+            }
+        }
+    }
     checkOrder(order)
     { 
         let sectseats = this.getSect(order.wid, order.sid).seating;
         let idx = 0;
         let row = '';
         var seating = [];
+        let iarr = [];
+        let jarr = [];
+
         for(let i =0;i<sectseats.length;i++)
         {
             let rseats = sectseats[i].seats;
@@ -27,6 +52,8 @@ class Theater{
                 //rseats[j].status = 'sold';
                 if(order.seats[idx].cid == rseats[j].cid &&(rseats[j].status=='available'))
                 {
+                    iarr.push(i);
+                    jarr.push(j);
                     idx++;
                     if(idx==order.seats.length)
                     {
@@ -34,12 +61,20 @@ class Theater{
                         i = sectseats.length +1;
                         j = order.seats.length + 1;
                         seating.push(row1);
+
                     }
                 }
             }
         }
         if(idx == order.seats.length)
         {
+            let i =0;
+            while(true)
+            {
+                sectseats[iarr[i]].seats[jarr[i]].status = 'sold';
+                i++;
+                if(i == order.seats.length){break;}
+            }
             let tickarr = [];
             let tickarr1 = [];
             let ssats = seating[0].seats;
@@ -47,13 +82,15 @@ class Theater{
             {
                 let tick = new Ticket(this.getPrice(order.wid, order.sid, order.seats.length), 'open', order.wid, order.show_info,
                 order.patron_info, order.sid, sectseats.name, ssats[i]);
-                let obj = {"tid":tick.tid.toString(), "status": 'open'}
+                let obj = {"tid":tick.tid.toString(), "status": 'open'};
                 tickarr.push(obj);
-                tickarr1.push(tick.tid.toString());
-                this.addTicket(tick);
+                tickarr1.push(_.omit(tick, ['price', 'wid', 'show_info', 'patron_info', 'sid', 'section_name', 'seating']));
+                this.tickets.push(tick);
             }
-            let order1 = new Order(order.wid, order.show_info, this.getPrice(order.wid, order.sid, order.seats.length), order.seats.length, order.patron_info, tickarr);
-            this.addOrder(order1);
+            let show = this.getShowbyID(order.wid).show_info;
+            let order1 = new Order(order.wid, show,
+            this.getPrice(order.wid, order.sid, order.seats.length), order.seats.length, order.patron_info, tickarr);
+            this.orders.push(order1);
             let order2 = _.omit(order1, ['tickets']);
             let obj1 = {"tickets": tickarr1};
             let retobj = Object.assign(order2, obj1);
@@ -303,9 +340,9 @@ class Theater{
     }
     getSect(wid, sid)
     {
-        for( var i =0;i<this.sectholders.length;i++)
+        
+        for(let i =0;i<this.sectholders.length;i++)
         {
-            //console.log(this.sectholders[i]);
             if((this.sectholders[i].wid == wid) && (this.sectholders[i].sid == sid))
             {
                 return this.sectholders[i];

@@ -14,7 +14,7 @@ class Ticket{
     static getid()
     {
         if (!this.tid) 
-        { this.tid = 723; } 
+        { this.tid = 700; } 
         else this.tid++; 
         return this.tid; 
     }
