@@ -1,14 +1,16 @@
 let Row = require('./Row.js');
 let Ticket = require('./Ticket.js');
 let Order = require('./Order.js');
+let Donation = require('./Donations.js');
 var _ = require('underscore');
 class Theater{
-    constructor(show, sectholders, orders, tickets)
+    constructor(show, sectholders, orders, tickets, donations)
     {
         this.show = show;
         this.sectholders = sectholders;
         this.orders = orders;
         this.tickets = tickets;
+        this.donations = donations;
     }
     scanTicket(tid)
     {
