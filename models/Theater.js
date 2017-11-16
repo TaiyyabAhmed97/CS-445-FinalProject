@@ -12,6 +12,17 @@ class Theater{
         this.tickets = tickets;
         this.donations = donations;
     }
+    UpdateDonations(ticksarr, DonatedTicks)
+    {
+        
+    }
+    UpdatePatron(tid, patron)
+    {
+        for(let i =0;i<this.tickets.length;i++)
+        {
+            if(tid)
+        }
+    }
     scanTicket(tid)
     {
         for(let i =0;i<this.tickets.length;i++)
