@@ -13,6 +13,7 @@ var _ = require('underscore');
 var express = require('express');
 var moment = require('moment');
 var app = express();
+var fs = require('fs');
 var bodyParser = require('body-parser');
 var router = express.Router();
 //express
@@ -29,17 +30,13 @@ var DonatedTicks = [];
 var DonatedTickstid = [];
 //Routes
 //Define Theater layout and sections
-
+var contents = fs.readFileSync("seating.json");
+var jsoncontent = JSON.parse(contents);
 var Sections = [];
-app.route('/populate/sections')
-    .post(function (req, res) {
-
-        for (let i = 0; i < req.body.length; i++) {
-            let sect = new Section(req.body[i].section_name, req.body[i].seating);
-            Sections.push(sect);
-        }
-        res.send(Sections);
-    });
+for (let i = 0; i < jsoncontent.length; i++) {
+    let sect = new Section(jsoncontent[i].section_name, jsoncontent[i].seating);
+    Sections.push(sect);
+}
 
 // All Show API Endpoints
 
@@ -214,17 +211,13 @@ app.route('/thalia/orders/:oid')
 
 //Begin Tickets/Reports API
 app.route('/thalia/tickets/donations')
-.post(function (req, res) {
-    for(let i =0;i<req.body.tickets.length;i++)
-    {
-        DonatedTickstid.push(req.body.tickets[i]);
-    }
-    /*for(let i =0;i<Theater1.tickets.length;i++)
-    {
-        for()
-    }*/
-    res.send(200);
-});
+    .post(function (req, res) {
+        for (let i = 0; i < req.body.tickets.length; i++) {
+            DonatedTickstid.push(req.body.tickets[i]);
+        }
+
+        res.send(200);
+    });
 
 
 app.route('/thalia/tickets/:tid')
