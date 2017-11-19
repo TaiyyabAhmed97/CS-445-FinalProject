@@ -3,182 +3,188 @@ let Ticket = require('./Ticket.js');
 let Order = require('./Order.js');
 let Donation = require('./Donations.js');
 var _ = require('underscore');
-class Theater{
-    constructor(show, sectholders, orders, tickets, donations)
-    {
+class Theater {
+    constructor(show, sectholders, orders, tickets, donations) {
         this.show = show;
         this.sectholders = sectholders;
         this.orders = orders;
         this.tickets = tickets;
         this.donations = donations;
     }
-    UpdateDonations(ticksarr, DonatedTicks)
-    {
-        
-    }
-    UpdatePatron(tid, patron)
-    {
-        for(let i =0;i<this.tickets.length;i++)
-        {
-            if(tid)
+    getdonation(wid, did) {
+        //console.log(this.donations);
+        for (let i = 0; i < this.donations.length; i++) {
+            if ((this.donations[i].wid == wid) && (this.donations[i].did == did)) {
+                return this.donations[i];
+            }
         }
     }
-    scanTicket(tid)
-    {
-        for(let i =0;i<this.tickets.length;i++)
-        {
-            if(tid == this.tickets[i].tid)
+    UpdateDonations(tidarr) {
+        if (tidarr) {
+            let donationsarr = this.donations;
+            let delarr = [];
+            for(let i =0;i<tidarr.length;i++)
             {
+                for(let j =0;j<donationsarr.length;j++)
+                {
+                    if(donationsarr[j].wid == this.tickets[tidarr[i]].wid)
+                    {
+                        if(donationsarr[j].count>donationsarr[j].tickets.length)
+                        {
+                            donationsarr[j].tickets.push(this.tickets[tidarr[i]].tid);
+                            this.tickets[tidarr[i]].patron_info = donationsarr[j].patron_info;
+                            donationsarr[j].setStatus();
+                            delarr.push(i);
+                        }
+                    }
+                }
+            }
+            for(let i =0;i<delarr.length;i++)
+            {
+                tidarr.splice(delarr[i],1);
+            }
+            return tidarr;
+        } else {
+            return 'no donated tickets yet';
+        }
+    }
+    scanTicket(tid) {
+        for (let i = 0; i < this.tickets.length; i++) {
+            if (tid == this.tickets[i].tid) {
                 this.tickets[i].status = 'used';
                 break;
             }
         }
-        return {"tid": tid, "status": 'used'};
+        return {
+            "tid": tid,
+            "status": 'used'
+        };
     }
-    getTicket(tid)
-    {
-        for(let i =0;i<this.tickets.length;i++)
-        {
-            if(tid == this.tickets[i].tid)
-            {
+    getTicket(tid) {
+        for (let i = 0; i < this.tickets.length; i++) {
+            if (tid == this.tickets[i].tid) {
                 return this.tickets[i];
             }
         }
     }
-    checkOrder(order)
-    { 
+    checkOrder(order) {
         let sectseats = this.getSect(order.wid, order.sid).seating;
         let idx = 0;
         let row = '';
         var seating = [];
         let iarr = [];
         let jarr = [];
-
-        for(let i =0;i<sectseats.length;i++)
-        {
+        //console.log(sectseats.name);
+        for (let i = 0; i < sectseats.length; i++) {
             let rseats = sectseats[i].seats;
             row = sectseats[i].row;
             let row1 = new Row();
             row1.row = row;
-            for(let j = 0;j<rseats.length;j++)
-            {
+            for (let j = 0; j < rseats.length; j++) {
                 //rseats[j].status = 'sold';
-                if(order.seats[idx].cid == rseats[j].cid &&(rseats[j].status=='available'))
-                {
+                if (order.seats[idx].cid == rseats[j].cid && (rseats[j].status == 'available')) {
                     iarr.push(i);
                     jarr.push(j);
                     idx++;
-                    if(idx==order.seats.length)
-                    {
+                    if (idx == order.seats.length) {
                         row1.seats = order.seats;
-                        i = sectseats.length +1;
+                        i = sectseats.length + 1;
                         j = order.seats.length + 1;
                         seating.push(row1);
-
                     }
                 }
             }
         }
-        if(idx == order.seats.length)
-        {
-            let i =0;
-            while(true)
-            {
+        if (idx == order.seats.length) {
+            let i = 0;
+            while (true) {
                 sectseats[iarr[i]].seats[jarr[i]].status = 'sold';
                 i++;
-                if(i == order.seats.length){break;}
+                if (i == order.seats.length) {
+                    break;
+                }
             }
             let tickarr = [];
             let tickarr1 = [];
             let ssats = seating[0].seats;
-            for(let i =0;i<ssats.length;i++)
-            {
-                let tick = new Ticket(this.getPrice(order.wid, order.sid, order.seats.length), 'open', order.wid, order.show_info,
-                order.patron_info, order.sid, sectseats.name, ssats[i]);
-                let obj = {"tid":tick.tid.toString(), "status": 'open'};
+            for (let i = 0; i < ssats.length; i++) {
+                let tick = new Ticket(this.getPrice(order.wid, order.sid, order.seats.length), 'open', order.wid, this.getShowbyID(order.wid).show_info,
+                    order.patron_info, order.sid, this.getSect(order.wid, order.sid).name, ssats[i]);
+                    //console.log(tick);
+                let obj = {
+                    "tid": tick.tid.toString(),
+                    "status": 'open'
+                };
                 tickarr.push(obj);
                 tickarr1.push(_.omit(tick, ['price', 'wid', 'show_info', 'patron_info', 'sid', 'section_name', 'seating']));
                 this.tickets.push(tick);
             }
             let show = this.getShowbyID(order.wid).show_info;
             let order1 = new Order(order.wid, show,
-            this.getPrice(order.wid, order.sid, order.seats.length), order.seats.length, order.patron_info, tickarr);
+                this.getPrice(order.wid, order.sid, order.seats.length), order.seats.length, order.patron_info, tickarr);
             this.orders.push(order1);
             let order2 = _.omit(order1, ['tickets']);
-            let obj1 = {"tickets": tickarr1};
+            let obj1 = {
+                "tickets": tickarr1
+            };
             let retobj = Object.assign(order2, obj1);
             return retobj;
-        }
-        else
-        {
+        } else {
             let str = 'Sorry the requested seat(s) are not available';
             return str;
         }
     }
-    getseating(wid, sid, count, starting_seat_id)
-    {
+    getseating(wid, sid, count, starting_seat_id) {
         let sect = this.getSect(wid, sid);
         let section_name = sect.name;
         let sectseats = sect.seating;
         let seating = [];
         let name = '';
-        if(!starting_seat_id)
-        {            
-            for(let i =0;i<sectseats.length;i++)
-            {
+        if (!starting_seat_id) {
+            for (let i = 0; i < sectseats.length; i++) {
                 let rowseats = sectseats[i].seats;
                 name = sectseats[i].row;
                 seating = [];
-                for(let j=0;j<rowseats.length;j++)
-                {
-                    if(rowseats[j].status == 'available')
-                    {
+                for (let j = 0; j < rowseats.length; j++) {
+                    if (rowseats[j].status == 'available') {
                         seating.push(rowseats[j]);
-                        if(seating.length==count)
-                        {
+                        if (seating.length == count) {
                             i = 100000;
                             j = i;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         seating = [];
                     }
                 }
             }
-            if(seating.length==count)
-            {
-            let status = 'ok';
-            let show = this.getShowbyID(wid).getShow().show_info;
-            let total_amount = 0;
-            let sections = this.getShowbyID(wid).seating_info;
-            for(let k = 0;k<sections.length;k++)
-            {
-                if(sections[k].sid == sid)
-                {
-                    total_amount = sections[k].price * count;
-                    k = sections.length + 1;
+            if (seating.length == count) {
+                let status = 'ok';
+                let show = this.getShowbyID(wid).getShow().show_info;
+                let total_amount = 0;
+                let sections = this.getShowbyID(wid).seating_info;
+                for (let k = 0; k < sections.length; k++) {
+                    if (sections[k].sid == sid) {
+                        total_amount = sections[k].price * count;
+                        k = sections.length + 1;
+                    }
                 }
-            }
-            starting_seat_id = seating[0].cid;
-            var seta1 = {};
-            seta1['row'] = name;
-            seta1['seats'] = seating;
-            var seta = {};
-            seta['wid'] = wid;
-            seta['show_info'] = show;
-            seta['sid'] = sid;
-            seta['section_name'] = section_name;
-            seta['starting_seat_id'] = starting_seat_id;
-            seta['status'] = status;
-            seta['total_amount'] = total_amount;
-            seta['seating'] = seta1;
-            return seta;
-            }
-            else
-            {
+                starting_seat_id = seating[0].cid;
+                var seta1 = {};
+                seta1['row'] = name;
+                seta1['seats'] = seating;
+                var seta = {};
+                seta['wid'] = wid;
+                seta['show_info'] = show;
+                seta['sid'] = sid;
+                seta['section_name'] = section_name;
+                seta['starting_seat_id'] = starting_seat_id;
+                seta['status'] = status;
+                seta['total_amount'] = total_amount;
+                seta['seating'] = seta1;
+                return seta;
+            } else {
                 seating = [];
-                let status = 'Error '+count+' contiguous seats were not found';
+                let status = 'Error ' + count + ' contiguous seats were not found';
                 let show = this.getShowbyID(wid).getShow().show_info;
                 starting_seat_id = '201';
                 var seta1 = {};
@@ -194,70 +200,56 @@ class Theater{
                 seta['seating'] = seating;
                 return seta;
             }
-            
-         }
-         else
-         {
-             let done = false;
-            for(var i =0;i<sectseats.length;i++)
-            {
+
+        } else {
+            let done = false;
+            for (var i = 0; i < sectseats.length; i++) {
                 let rowseats = sectseats[i].seats;
                 name = sectseats[i].row;
                 seating = [];
-                for(var j=0;j<rowseats.length;j++)
-                {
-                    if((rowseats[j].cid == starting_seat_id) || (done))
-                    {
+                for (var j = 0; j < rowseats.length; j++) {
+                    if ((rowseats[j].cid == starting_seat_id) || (done)) {
                         done = true;
-                    if(rowseats[j].status == 'available')
-                    {
-                        seating.push(rowseats[j]);
-                        if(seating.length==count)
-                        {
-                            i = 100000;
-                            j = i;
+                        if (rowseats[j].status == 'available') {
+                            seating.push(rowseats[j]);
+                            if (seating.length == count) {
+                                i = 100000;
+                                j = i;
+                            }
+                        } else {
+                            seating = [];
                         }
                     }
-                    else
-                    {
-                        seating = [];
-                    }
-                    }
                 }
             }
-            if(seating.length==count)
-            {
-            let status = 'ok';
-            let show = this.getShowbyID(wid).getShow().show_info;
-            let total_amount = 0;
-            let sections = this.getShowbyID(wid).seating_info;
-            for(var k = 0;k<sections.length;k++)
-            {
-                if(sections[k].sid == sid)
-                {
-                    total_amount = sections[k].price * count;
-                    k = sections.length + 1;
+            if (seating.length == count) {
+                let status = 'ok';
+                let show = this.getShowbyID(wid).getShow().show_info;
+                let total_amount = 0;
+                let sections = this.getShowbyID(wid).seating_info;
+                for (var k = 0; k < sections.length; k++) {
+                    if (sections[k].sid == sid) {
+                        total_amount = sections[k].price * count;
+                        k = sections.length + 1;
+                    }
                 }
-            }
-            starting_seat_id = seating[0].cid;
-            var seta1 = {};
-            seta1['row'] = name;
-            seta1['seats'] = seating;
-            var seta = {};
-            seta['wid'] = wid;
-            seta['show_info'] = show;
-            seta['sid'] = sid;
-            seta['section_name'] = section_name;
-            seta['starting_seat_id'] = starting_seat_id;
-            seta['status'] = status;
-            seta['total_amount'] = total_amount;
-            seta['seating'] = seta1;
-            return seta;
-            }
-            else
-            {
+                starting_seat_id = seating[0].cid;
+                var seta1 = {};
+                seta1['row'] = name;
+                seta1['seats'] = seating;
+                var seta = {};
+                seta['wid'] = wid;
+                seta['show_info'] = show;
+                seta['sid'] = sid;
+                seta['section_name'] = section_name;
+                seta['starting_seat_id'] = starting_seat_id;
+                seta['status'] = status;
+                seta['total_amount'] = total_amount;
+                seta['seating'] = seta1;
+                return seta;
+            } else {
                 seating = [];
-                let status = 'Error '+count+' contiguous seats were not found';
+                let status = 'Error ' + count + ' contiguous seats were not found';
                 let show = this.getShowbyID(wid).getShow().show_info;
                 starting_seat_id = '201';
                 var seta1 = {};
@@ -273,104 +265,83 @@ class Theater{
                 seta['seating'] = seating;
                 return seta;
             }
-         }
+        }
 
 
     }
-    getOrders(oid)
-    {
-        if(!oid)
-        {
+    getOrders(oid) {
+        if (!oid) {
             let tmparr = [];
-            for(let i =0;i<this.orders.length;i++)
-            {
+            for (let i = 0; i < this.orders.length; i++) {
                 tmparr.push(_.omit(this.orders[i], ["tickets"]));
             }
             return tmparr;
-        }
-        else
-        {
-            for(let i =0;i<this.orders.length;i++)
-            {
-                if(oid == this.orders[i].oid)
-                {
+        } else {
+            for (let i = 0; i < this.orders.length; i++) {
+                if (oid == this.orders[i].oid) {
                     return this.orders[i];
                 }
             }
         }
     }
-    addShow(show)
-    {
+    addShow(show) {
         this.show.push(show);
     }
-    addSect(sect)
-    {
+    addSect(sect) {
         this.sectholders.push(sect);
     }
-    addOrder(order)
-    {
+    addOrder(order) {
         this.orders.push(order);
     }
-    addTicket(ticket)
-    {
+    addTicket(ticket) {
         this.tickets.push(ticket);
     }
-    getShowbyID(wid)
-    {
-        for(var i =0; i<this.show.length; i++)
-        {
-            if(wid==this.show[i].wid)
-            {
-               return this.show[i];
+    getShowbyID(wid) {
+        for (var i = 0; i < this.show.length; i++) {
+            if (wid == this.show[i].wid) {
+                return this.show[i];
             }
-            
+
         }
     }
-    getIDbyShow(show)
-    {
-        for(var i =0; i<this.show.length; i++)
-        {
-            if(this.show[i]==show)
-            {
-               return this.show[i].id;
+    getIDbyShow(show) {
+        for (var i = 0; i < this.show.length; i++) {
+            if (this.show[i] == show) {
+                return this.show[i].id;
             }
-            
+
         }
     }
-    getPrice(wid, sid, count)
-    {
+    getPrice(wid, sid, count) {
         let sections = this.getShowbyID(wid).seating_info;
         let total_amount = 0;
-        for(let k = 0;k<sections.length;k++)
-        {
-            if(sections[k].sid == sid)
-            {
+        for (let k = 0; k < sections.length; k++) {
+            if (sections[k].sid == sid) {
                 total_amount = sections[k].price * count;
                 k = sections.length + 1;
             }
         }
         return total_amount;
     }
-    getSect(wid, sid)
-    {
-        
-        for(let i =0;i<this.sectholders.length;i++)
-        {
-            if((this.sectholders[i].wid == wid) && (this.sectholders[i].sid == sid))
-            {
+    getSect(wid, sid) {
+
+        for (let i = 0; i < this.sectholders.length; i++) {
+            if ((this.sectholders[i].wid == wid) && (this.sectholders[i].sid == sid)) {
                 return this.sectholders[i];
             }
         }
     }
-    replaceSect(sect)
-    {
-        for(let i = this.sectholders.length-1; i--;){
+    replaceSect(sect) {
+        for (let i = this.sectholders.length - 1; i--;) {
             if (this.sectholders[i] === sect[0].wid) array.splice(i, 1);
         }
-        for(var i =0;i<sect.length;i++)
-        {
+        for (var i = 0; i < sect.length; i++) {
             this.addShow(sect[i]);
         }
+    }
+    addDonation(dona)
+    {
+        this.donations.push(dona);
     }
 
 }

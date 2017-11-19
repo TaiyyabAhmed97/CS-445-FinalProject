@@ -4,8 +4,9 @@ class Donations{
         this.did = Donations.getdid();
         this.wid = wid;
         this.count = count;
+        this.patron_info = patron;
         this.status = 'pending';
-        this.tickets = null;
+        this.tickets = [];
     }
     static getdid()
     {
@@ -14,9 +15,12 @@ class Donations{
         else this.did++; 
         return this.did; 
     }
-    setTicks(tickets)
+    addTicks(ticket)
     {
-        this.tickets = tickets;
+        if(this.tickets.length<this.count)
+        {
+            this.tickets.push(ticket)
+        }
     }
     setStatus()
     {
@@ -24,3 +28,4 @@ class Donations{
     }
     
 }
+module.exports = Donations;

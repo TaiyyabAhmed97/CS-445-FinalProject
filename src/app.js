@@ -8,7 +8,7 @@ var Ticket = require('.././models/Ticket');
 var Patron = require('.././models/Patron');
 var SectHolder = require('.././models/SectHolder');
 var Theater = require('.././models/Theater');
-var Donation = require('.././models/Donations');
+var Donations = require('.././models/Donations');
 var _ = require('underscore');
 var express = require('express');
 var moment = require('moment');
@@ -26,7 +26,6 @@ Theater1.sectholders = [];
 Theater1.orders = [];
 Theater1.tickets = [];
 Theater1.donations = [];
-var DonatedTicks = [];
 var DonatedTickstid = [];
 //Routes
 //Define Theater layout and sections
@@ -53,7 +52,7 @@ app.route('/thalia/shows')
         }
     })
     .post(function (req, res) {
-        let show1 = new Show(req.body.show_info, req.body.seating_info)
+        let show1 = new Show(req.body.show_info, req.body.seating_info);
         Theater1.addShow(show1);
         for (var i = 0; i < show1.seating_info.length; i++) {
             let seatid = show1.seating_info[i].sid - 123;
@@ -106,7 +105,7 @@ app.route('/thalia/shows/:showId/sections')
                     let price = {
                         "price": show.seating_info[i].price
                     };
-                    console.log(show.seating_info[i].price);
+                    //console.log(show.seating_info[i].price);
                     let obj1 = Object.assign(obj2, price);
                     sarr.push(obj1);
                 }
@@ -128,14 +127,17 @@ app.route('/thalia/shows/:showId/sections/:secId')
 
 app.route('/thalia/shows/:showId/donations')
     .post(function (req, res) {
-        let donate = new Donations(req.params.showsId, req.body.count, req.body.patron_info);
-        Theater1.donations.push(donate);
-        Theater1.UpdateDonations(DonatedTicks, DonatedTickstid);
+        let donate = new Donations(req.params.showId, req.body.count, req.body.patron_info);
+        //console.log(donate);
+        Theater1.addDonation(donate);
+        DonatedTickstid = Theater1.UpdateDonations(DonatedTickstid);
+        res.send({"did":donate.did});
     });
 
 app.route('/thalia/shows/:showId/donations/:donateId')
     .get(function (req, res) {
-        //make patron object and use it for this
+       // DonatedTickstid = Theater1.UpdateDonations(DonatedTickstid);
+        res.send(Theater1.getdonation(req.params.showId, req.params.donateId));
     });
 
 
@@ -197,6 +199,7 @@ app.route('/thalia/orders')
 app.route('/thalia/orders?start_date=YYYYMMDD&end_date=YYYYMMDD')
     .get(function (req, res) {
         //return orders within a specifc time period.
+        
     });
 
 app.route('/thalia/orders/:oid')
@@ -212,11 +215,17 @@ app.route('/thalia/orders/:oid')
 //Begin Tickets/Reports API
 app.route('/thalia/tickets/donations')
     .post(function (req, res) {
-        for (let i = 0; i < req.body.tickets.length; i++) {
-            DonatedTickstid.push(req.body.tickets[i]);
+        for (let i = 0; i < Theater1.tickets.length; i++) {
+            for(let j =0;j<req.body.tickets.length;j++)
+            {
+                if(req.body.tickets[j] == Theater1.tickets[i].tid)
+                {
+                    DonatedTickstid.push(i);
+                }
+            }
         }
 
-        res.send(200);
+        res.send(DonatedTickstid);
     });
 
 
