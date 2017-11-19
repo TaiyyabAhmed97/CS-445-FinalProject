@@ -2,6 +2,7 @@ let Row = require('./Row.js');
 let Ticket = require('./Ticket.js');
 let Order = require('./Order.js');
 let Donation = require('./Donations.js');
+var moment = require('moment');
 var _ = require('underscore');
 class Theater {
     constructor(show, sectholders, orders, tickets, donations) {
@@ -10,6 +11,19 @@ class Theater {
         this.orders = orders;
         this.tickets = tickets;
         this.donations = donations;
+    }
+    getOrdersBetween(start, end)
+    {
+        let arr = [];
+        for(let  i =0;i<this.orders.length;i++)
+        {
+            if(moment(this.orders[i].date).isBetween(moment(start).subtract(1, 'days'), moment(end).add(1, 'days')))
+            {
+                console.log(this.orders[i].date);
+                arr.push(this.orders[i]);
+            }
+        }
+        return arr;
     }
     getdonation(wid, did) {
         //console.log(this.donations);
@@ -108,7 +122,7 @@ class Theater {
             let tickarr1 = [];
             let ssats = seating[0].seats;
             for (let i = 0; i < ssats.length; i++) {
-                let tick = new Ticket(this.getPrice(order.wid, order.sid, order.seats.length), 'open', order.wid, this.getShowbyID(order.wid).show_info,
+                let tick = new Ticket(this.getPrice(order.wid, order.sid, 1), 'open', order.wid, this.getShowbyID(order.wid).show_info,
                     order.patron_info, order.sid, this.getSect(order.wid, order.sid).name, ssats[i]);
                     //console.log(tick);
                 let obj = {

@@ -36,6 +36,10 @@ for (let i = 0; i < jsoncontent.length; i++) {
     let sect = new Section(jsoncontent[i].section_name, jsoncontent[i].seating);
     Sections.push(sect);
 }
+app.route('/thalia/seats123')
+    .get(function(req, res){
+        res.send(Sections);
+    });
 
 // All Show API Endpoints
 
@@ -184,6 +188,9 @@ app.route('/thalia/sections/:secId')
 //End Seating/Section API
 
 //Begin Orders API Endpoints
+
+
+
 app.route('/thalia/orders')
     .post(function (req, res) {
         //rcreate orders object and do tuff here
@@ -193,15 +200,18 @@ app.route('/thalia/orders')
 
     })
     .get(function (req, res) {
+        if(_.has(req.query, 'start_date'))
+        {
+            let start_date =  moment(req.query.start_date).format("YYYY-MM-DD h:mm");
+            let end_date = moment(req.query.start_date).format("YYYY-MM-DD h:mm");
+            
+            res.send(Theater1.getOrdersBetween(start_date, end_date));
+        }
+        else
+        {
         res.send(Theater1.getOrders());
+        }
     });
-
-app.route('/thalia/orders?start_date=YYYYMMDD&end_date=YYYYMMDD')
-    .get(function (req, res) {
-        //return orders within a specifc time period.
-        
-    });
-
 app.route('/thalia/orders/:oid')
     .get(function (req, res) {
         res.send(Theater1.getOrders(req.params.oid));
