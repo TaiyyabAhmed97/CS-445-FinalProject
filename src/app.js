@@ -260,7 +260,7 @@ app.route('/thalia/tickets/:tid')
 
 app.route('/thalia/tickets/reports')
     .get(function (req, res) {
-        //return name and id of 3 specifc reports
+        
     });
 
 app.route('/thalia/tickets//reports/{mrid}[ ?show={wid} | ?start_date=YYYYMMDD&end_date=YYYYMMDD]')
