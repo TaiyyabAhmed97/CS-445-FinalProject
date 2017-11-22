@@ -2,6 +2,7 @@ let Row = require('./Row.js');
 let Ticket = require('./Ticket.js');
 let Order = require('./Order.js');
 let Donation = require('./Donations.js');
+let OccupancyReport = require('./OccupancyReport.js');
 var moment = require('moment');
 var _ = require('underscore');
 class Theater {
@@ -83,6 +84,7 @@ class Theater {
     }
     checkOrder(order) {
         let sectseats = this.getSect(order.wid, order.sid).seating;
+        
         let idx = 0;
         let row = '';
         var seating = [];
@@ -96,7 +98,9 @@ class Theater {
             row1.row = row;
             for (let j = 0; j < rseats.length; j++) {
                 //rseats[j].status = 'sold';
-                if (order.seats[idx].cid == rseats[j].cid && (rseats[j].status == 'available')) {
+                if ((order.seats[idx].cid == rseats[j].cid) && (rseats[j].status == 'available')) {
+                    //console.log(order.seats[idx]);
+                    //console.log(rseats[j]);
                     iarr.push(i);
                     jarr.push(j);
                     idx++;
@@ -356,6 +360,77 @@ class Theater {
     addDonation(dona)
     {
         this.donations.push(dona);
+    }
+    getReport(rid, sections)
+    {
+        if(rid == 801)
+        {
+            let occreport = new OccupancyReport();
+            occreport.start_date = '';
+            occreport.end_date = '';
+            occreport.total_shows = this.show.length;
+            let seatcount = 0;
+            let count = 0;
+            for(let i =0;i<this.sectholders.length;i++)
+            {
+                let seatss = this.sectholders[i].seating;
+                for(let j = 0;j<seatss.length;j++)
+                {
+                    for(let k = 0;k<seatss[j].seats.length;k++)
+                    {
+                       // console.log(this.sectholders[i].wid);
+                        //console.log(seatss[j].seats[k]);
+                        if(seatss[j].seats[k].status == 'sold')
+                        {
+                            count++;
+                        }
+                    }
+                    seatcount = seatcount + seatss[j].seats.length;
+                }
+
+            }
+            occreport.total_seats = seatcount;
+            occreport.sold_seats = count;
+            occreport.overall_occupancy = Number((count/seatcount) * 100).toFixed(2) + "%";
+            var show1 = {};
+            show1['wid'] = '';
+            show1['show_info'] = '';
+            show1['seats_available'] = 0;
+            show1['seats_sold'] = 0;
+            show1['occupancy'] = '';
+            let temparr = [];
+            for(let i =0;i<this.show.length;i++)
+            {
+                show1['wid'] = this.show[i].wid;
+                show1['show_info'] = this.show[i].show_info;
+                count = 0;
+                seatcount = 0;
+                for(let j =0;j<this.sectholders.length;j++)
+                {
+                    if(this.show[i].wid == this.sectholders[j].wid)
+                    {
+                        for(let k =0;k<this.sectholders[j].seating.length;k++)
+                        {
+                            for(let p =0;p<this.sectholders[j].seating[k].seats.length;p++)
+                            {
+                                if(this.sectholders[j].seating[k].seats[p].status == 'sold')
+                                {
+                                    //console.log(p);
+                                    count++;
+                                }
+                            }
+                            seatcount = seatcount + this.sectholders[j].seating[k].seats.length;
+                        }
+                    }
+                }
+                show1['seats_available'] = seatcount;
+                show1['seats_sold'] = count;
+                show1['occupancy'] = Number((count/seatcount) * 100).toFixed(2) + "%";
+                temparr.push(JSON.parse(JSON.stringify(show1)));
+            }
+            occreport.shows = temparr;
+            return occreport;
+        }
     }
 
 }

@@ -27,6 +27,7 @@ Theater1.orders = [];
 Theater1.tickets = [];
 Theater1.donations = [];
 var DonatedTickstid = [];
+let fullticks = [];
 //Routes
 //Define Theater layout and sections
 var contents = fs.readFileSync("seating.json");
@@ -36,10 +37,22 @@ for (let i = 0; i < jsoncontent.length; i++) {
     let sect = new Section(jsoncontent[i].section_name, jsoncontent[i].seating);
     Sections.push(sect);
 }
+fullticks = JSON.parse(JSON.stringify(Sections));
+for(let i = 0;i<fullticks.length;i++)
+{
+    for(let j =0;j<fullticks[i].seating.length;j++)
+    {
+        for(let k =0;k<fullticks[i].seating[j].seats.length;k++)
+        {
+            fullticks[i].seating[j].seats[k] = new Seat(fullticks[i].seating[j].seats[k]);
+        }
+    }
+}
 app.route('/thalia/seats123')
     .get(function(req, res){
-        res.send(Sections);
+        res.send(Theater1.sectholders);
     });
+
 
 // All Show API Endpoints
 
@@ -62,12 +75,10 @@ app.route('/thalia/shows')
             let seatid = show1.seating_info[i].sid - 123;
             //console.log(seatid);
             let sect2 = new SectHolder(show1.seating_info[i].sid, show1.wid, show1.seating_info[i].price, Sections[seatid].section_name);
-            sect2.getSeats(Sections[seatid].seating);
+            sect2.getSeats(fullticks);
             Theater1.addSect(sect2);
         }
-        res.send({
-            "wid": Theater1.show[Theater1.show.length - 1].wid
-        });
+        res.send({"wid": Theater1.show[Theater1.show.length - 1].wid});
         //console.log(Theater1.show[Theater1.show.length-1].wid);
         // do case for error
     });
@@ -84,7 +95,7 @@ app.route('/thalia/shows/:showsId')
         for (var i = 0; i < Theater1.show[id].seating_info.length; i++) {
             let seatid = Theater1.show[id].seating_info[i].sid - 123;
             let sect2 = new SectHolder(Theater1.show[id].seating_info[i].sid, Theater1.show[id].wid, Theater1.show[id].seating_info[i].price, Sections[seatid].section_name);
-            sect2.getSeats(Sections[seatid].seating);
+            sect2.getSeats(fullticks);
             sects3.push(sect2);
         }
         Theater1.replaceSect(sects3);
@@ -180,11 +191,6 @@ app.route('/thalia/sections')
         res.send(temp);
     });
 
-app.route('/thalia/sections/:secId')
-    .get(function (req, res) {
-        res.send(Sections[req.params.secId - 123]);
-    });
-
 //End Seating/Section API
 
 //Begin Orders API Endpoints
@@ -258,14 +264,37 @@ app.route('/thalia/tickets/:tid')
     });
 
 
-app.route('/thalia/tickets/reports')
+app.route('/thalia/reports')
     .get(function (req, res) {
-        
+      let obj = [{
+        mrid: "801",
+        name: "Theatre occupancy"
+    }, {
+        mrid: "802",
+        name: "Revenue from ticket sales"
+    },
+    {
+        mrid: "803",
+        name: "Donated tickets report"
+    },
+];  
+    res.send(obj);
     });
 
-app.route('/thalia/tickets//reports/{mrid}[ ?show={wid} | ?start_date=YYYYMMDD&end_date=YYYYMMDD]')
+app.route('/thalia/reports/:mrid/')
     .get(function (req, res) {
         //retun what prof said in the specification
+        if(_.has(req.query,"start_date"))
+        {
+
+        }
+        else if(_.has(req.query, "show"))
+        {
+
+        }
+        else{
+            res.send(Theater1.getReport(req.params.mrid, Sections));
+        }
     });
 // End Reports/Tickets API
 
@@ -282,5 +311,5 @@ app.route('/thalia/search?topic=topicword&key=keyword')
 // End all API endpoints
 
 // Start Server
-app.listen(3000);
-console.log('Api is wokring on port 3000');
+app.listen(8080);
+console.log('Api is wokring on port 8080');
