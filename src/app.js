@@ -304,7 +304,7 @@ app.route('/thalia/reports/:mrid/')
 // 1 search API
 app.route('/thalia/search?topic=topicword&key=keyword')
     .get(function (req, res) {
-        //retun what prof said in the specification
+        
     });
 
 
