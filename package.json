@@ -4,7 +4,7 @@
   "description": "Ticketing software",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha Tests"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
     "eslint-config-rallycoding": "^3.2.0",
     "mocha": "^4.0.1",
     "request": "^2.83.0",
