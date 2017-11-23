@@ -1,11 +1,22 @@
 var should = require("should");
 var request = require("request");
+require("blanket");
 var expect = require("chai").expect;
 var baseurl = "http://localhost:8080/thalia";
 var util = require("util");
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let Show = require('.././models/Show.js');
+//let Show = require('.././models/Show.js');
+var Section = require('.././models/Section');
+var Seat = require('.././models/Seat');
+var Show = require('.././models/Show');
+var Row = require('.././models/Row');
+var Order = require('.././models/Order');
+var Ticket = require('.././models/Ticket');
+var Patron = require('.././models/Patron');
+var SectHolder = require('.././models/SectHolder');
+var Theater = require('.././models/Theater');
+var Donations = require('.././models/Donations');
 //let app = require('.././src/app.js');
 let seating = require('.././src/seating.json');
 let show1 = new Show();
@@ -321,9 +332,9 @@ let specifcisect = {
     }
   ]
 };
-let tick = {
-  "tid": "700",
-  "price": 60,
+let sometick =  {
+  "tid": 700,
+  "price": 0,
   "status": "open",
   "wid": "300",
   "show_info": {
@@ -337,17 +348,45 @@ let tick = {
     "phone": "123-456-7890",
     "email": "john.doe@example.com",
     "billing_address": "123 Main ST, Anytown, IL 45678",
-    "cc_number": "xxxxxxxxxxxx7654",
+    "cc_number": "1234567890987654",
     "cc_expiration_date": "12/21"
   },
   "sid": "123",
   "section_name": "Front right",
-  "seating": [{
-    "row": "1",
-    "seats": [{
+  "seating": {
       "cid": "201",
       "seat": "1"
-    }]
+  }
+};
+let tick = {
+  "oid": 400,
+  "wid": "300",
+  "show_info": {
+    "name": "King Lear",
+    "web": "http://www.example.com/shows/king-lear",
+    "date": "2017-12-05",
+    "time": "13:00"
+  },
+  "date_ordered": "2017-11-22 9:17",
+  "order_amount": 0,
+  "number_of_tickets": 3,
+  "patron_info": {
+    "name": "John Doe",
+    "phone": "123-456-7890",
+    "email": "john.doe@example.com",
+    "billing_address": "123 Main ST, Anytown, IL 45678",
+    "cc_number": "1234567890987654",
+    "cc_expiration_date": "12/21"
+  },
+  "tickets": [{
+    "tid": "700",
+    "status": "open"
+  }, {
+    "tid": "701",
+    "status": "open"
+  }, {
+    "tid": "702",
+    "status": "open"
   }]
 };
 let order =     {
@@ -534,7 +573,7 @@ it(' on /GET orders within a date', function(done) {
     });
 });
 
-it(' on /GET a specific order', function(done) {
+/*t(' on /GET a specific order', function(done) {
   chai.request(baseurl)
     .get('/orders/400')
     .end(function(err, res){
@@ -543,6 +582,18 @@ it(' on /GET a specific order', function(done) {
       //res.body.should.have.property('SUCCESS');
 
       expect(res.body).to.deep.equal(tick);
+      done();
+    });
+});*/
+it(' on /GET ticket/specific', function(done) {
+  chai.request(baseurl)
+    .get('/tickets/700')
+    .end(function(err, res){
+      res.status.should.equal(200)
+      //res.body.should.equal('object');
+      //res.body.should.have.property('SUCCESS');
+
+      expect(res.body).to.deep.equal(sometick);
       done();
     });
 });
