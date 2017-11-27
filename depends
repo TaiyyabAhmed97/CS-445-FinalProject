@@ -1,25 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 npm install blanket
 npm install body-parser
 npm install eslint
@@ -32,25 +11,6 @@ npm install chai-http --save-dev
 npm install mocha --save-dev
 npm install request --save-dev
 npm install should --save-dev
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 npm install should --save-dev
 cd src
 nodemon app.js
-C
-C
-n
