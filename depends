@@ -16,4 +16,4 @@ npm install request --save-dev
 npm install should --save-dev
 npm install should --save-dev
 cd src
-nodemon app.js
+node app.js
